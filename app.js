@@ -19,7 +19,7 @@ module.exports = (config) => {
 
   app.use(logger('dev'));
 
-  app.use('/bots/slack', slackRouter({reservationService, config}));
+  app.use('/bots/slack', slackRouter({reservationService, config})); //! must keep this before the other middleware so it uses the events-api middleware before this main one
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));

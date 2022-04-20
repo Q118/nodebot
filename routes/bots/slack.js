@@ -9,5 +9,7 @@ module.exports = (params) => {
 
     const slackEvents = createEventAdapter(config.slack.signingSecret);
 
+    router.use('/events', slackEvents.requestListener());
+
     return router;
 }
