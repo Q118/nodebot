@@ -9,7 +9,12 @@ module.exports = (params) => {
 
     const slackEvents = createEventAdapter(config.slack.signingSecret);
 
-    router.use('/events', slackEvents.requestListener());
+    router.use('/events', slackEvents.requestListener()); //? this event-middleware looks for registered event handlers that will be executed when an event occurs.
+    //then we register it with 'on' method.
+
+    slackEvents.on('app_mention', (event) => {
+        console.log(`Received mention event: ${JSON.stringify(event)}`);
+    })
 
     return router;
 }
