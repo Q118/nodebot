@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 
-const ReservationServce = require('./services/ReservationService');
+const ReservationService = require('./services/ReservationService');
 
 const indexRouter = require('./routes/index');
 const slackRouter = require('./routes/bots/slack');
@@ -11,7 +11,7 @@ const slackRouter = require('./routes/bots/slack');
 module.exports = (config) => {
   const app = express();
 
-  const reservationService = new ReservationServce(config.reservations);
+  const reservationService = new ReservationService(config.reservations);
 
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
