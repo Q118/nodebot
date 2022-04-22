@@ -12,9 +12,10 @@ class WitService {
 
         const extractedEntities = {};
 
-        Object.keys(entities).forEach(key => {
+        Object.keys(entities).forEach((key) => {
             extractedEntities[key] = entities[key][0].value;
         });
+        console.log("extracted: " + extractedEntities);
         return extractedEntities;
     }
 }

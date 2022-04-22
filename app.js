@@ -15,13 +15,15 @@ module.exports = (config) => {
   const reservationService = new ReservationService(config.reservations);
   const witService = new WitService(config.wit.token);
 
+  console.log("serviceW " + witService);
+
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
 
   app.use(logger('dev'));
 
-  app.use('/bots/slack', slackRouter({ reservationService, witService, config })); //! must keep this before the other middleware so it uses the events-api middleware before this main one
+  app.use('/bots/slack', slackRouter({ reservationService, witService, config }));
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
@@ -34,13 +36,6 @@ module.exports = (config) => {
     }
     return next();
   });
-
-// below use for testing
-  // app.use(async (req, res, next) => {
-  //   const entities = await witService.query('Hi I am Daniel. I want to reserve a table for two people tonight at 6pm')
-  //   console.log(entities);
-  //   return next();
-  // })
 
   app.use('/', indexRouter({ reservationService, config }));
 

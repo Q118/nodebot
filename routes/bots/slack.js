@@ -6,43 +6,45 @@ const moment = require('moment');
 const router = express.Router();
 
 module.exports = (params) => {
-    const { config, witService, reservationService } = params;
+  const { config, witService, reservationService } = params;
 
-    const slackEvents = createEventAdapter(config.slack.signingSecret);
-    const slackWebClient = new WebClient(config.slack.token);
+  const slackEvents = createEventAdapter(config.slack.signingSecret);
+  const slackWebClient = new WebClient(config.slack.token);
 
-    router.use('/events', slackEvents.requestListener());
+  router.use('/events', slackEvents.requestListener());
 
-    async function handleMention(event) {
-        const mention = /<@[A-Z0-9]+>/;
-        const eventText = event.text.replace(mention, '').trim();
+  async function handleMention(event) {
+    const mention = /<@[A-Z0-9]+>/;
+    const eventText = event.text.replace(mention, '').trim();
+    
+    console.log("can i get here?")
 
-        let text = '';
+    let text = '';
 
-        if (!eventText) {
-            text = 'Hey!';
-        } else {
-            const entities = await witService.query(eventText);
-            const { intent, customerName, reservationDateTime, numberOfGuests } = entities;
+    if (!eventText) {
+      text = 'Hey!';
+    } else {
+      const entities = await witService.query(eventText);
+      const { intent, customerName, reservationDateTime, numberOfGuests } = entities;
 
-            if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
-                text = 'Sorry - could you rephrase that?';
-                console.log(entities);
-            } else {
-                const reservationResult = await reservationService
-                    .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);
-                text = reservationResult.success || reservationResult.error;
-            }
-        }
-
-        return slackWebClient.chat.postMessage({
-            text,
-            channel: event.channel,
-            username: 'Resi',
-        });
+      if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
+        text = 'Sorry - could you rephrase that?';
+        console.log(entities);
+      } else {
+        const reservationResult = await reservationService
+          .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);
+        text = reservationResult.success || reservationResult.error;
+      }
     }
 
-    slackEvents.on('app_mention', handleMention);
+    return slackWebClient.chat.postMessage({
+      text,
+      channel: event.channel,
+      username: 'Resi',
+    });
+  }
 
-    return router;
+  slackEvents.on('app_mention', handleMention);
+
+  return router;
 };
