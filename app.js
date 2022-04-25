@@ -15,8 +15,6 @@ module.exports = (config) => {
   const reservationService = new ReservationService(config.reservations);
   const witService = new WitService(config.wit.token);
 
-  console.log("serviceW " + witService);
-
   // view engine setup
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
