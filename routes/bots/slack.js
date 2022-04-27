@@ -21,6 +21,20 @@ module.exports = (params) => {
   router.use('/events', slackEvents.requestListener());
 
   async function handleMention(event) {
+    const sessionId = createSessionId(event.channel, event.user, event.thread_ts || event.ts);
+    let session = sessionService.get(sessionId); //returns false if no session
+    if (!session) {
+      session = sessionService.create(sessionId);
+    
+      session.context = {
+        slack: {
+          channel: event.channel,
+          user: event.user,
+          thread_ts: event.thread_ts || event.ts,
+        }
+      }
+    }
+
     const mention = /<@[A-Z0-9]+>/;
     const eventText = event.text.replace(mention, '').trim();
     // console.log("event text: " + eventText); //debug
@@ -34,7 +48,7 @@ module.exports = (params) => {
       const customerName = entities["wit$contact:customerName"];
       const reservationDateTime = entities["wit$datetime:reservationDateTime"];
       const numberOfGuests = entities["wit$number:numberOfGuests"];
-      // console.log(`intent: ${intent}. customerName: ${customerName}. reservationDateTime: ${reservationDateTime}. numberOfGuests: ${numberOfGuests}`); //debug
+      console.log(`intent: ${intent}. customerName: ${customerName}. reservationDateTime: ${reservationDateTime}. numberOfGuests: ${numberOfGuests}`); //debug
       if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
         text = 'Sorry - could you rephrase that?';
       } else {
@@ -46,7 +60,8 @@ module.exports = (params) => {
 
     return slackWebClient.chat.postMessage({
       text,
-      channel: event.channel,
+      channel: session.context.slack.channel,
+      thread_ts: session.context.slack.thread_ts,
       username: 'Resi',
     });
   }

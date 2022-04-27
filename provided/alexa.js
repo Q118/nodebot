@@ -5,7 +5,6 @@ const Alexa = require('ask-sdk-core');
 const moment = require('moment');
 
 const ConversationService = require('../../services/ConversationService');
-
 const router = express.Router();
 
 module.exports = (params) => {
