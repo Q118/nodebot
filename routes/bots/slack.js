@@ -30,10 +30,8 @@ module.exports = (params) => {
       text = 'Hey!';
     } else {
       const entities = await witService.query(eventText);
-      const { intent } = entities;
-      const customerName = entities["wit$contact:customerName"];
-      const reservationDateTime = entities["wit$datetime:reservationDateTime"];
-      const numberOfGuests = entities["wit$number:numberOfGuests"];
+      const { intent, customerName, reservationDateTime, numberOfGuests } = entities;
+      
       if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
         text = 'Sorry - could you rephrase that?';
         console.log(`intent: ${intent}. customerName: ${customerName}. reservationDateTime: ${reservationDateTime}. numberOfGuests: ${numberOfGuests}`); //debug
