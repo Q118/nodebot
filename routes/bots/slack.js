@@ -3,6 +3,8 @@ const { createEventAdapter } = require('@slack/events-api');
 const { WebClient } = require('@slack/web-api');
 const moment = require('moment');
 
+const ConversationService = require('../../services/ConversationService');
+
 const router = express.Router();
 
 const createSessionId = (channel, user, ts) => {
@@ -24,23 +26,31 @@ module.exports = (params) => {
     const mention = /<@[A-Z0-9]+>/;
     const eventText = event.text.replace(mention, '').trim();
     // console.log("event text: " + eventText); //debug
+
+    const context = await ConversationService.run(witService, eventText, session.context);
+    const { conversation } = context;
+    const { entities } = conversation;
+
+    console.log("entities: " + JSON.stringify(entities, undefined, 2)); //debug
+
     let text = '';
 
-    if (!eventText) {
-      text = 'Hey!';
+    if (!conversation.complete) {
+      text = conversation.followUp;
     } else {
-      const entities = await witService.query(eventText);
-      const { intent, customerName, reservationDateTime, numberOfGuests } = entities;
-      
-      if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
-        text = 'Sorry - could you rephrase that?';
-        console.log(`intent: ${intent}. customerName: ${customerName}. reservationDateTime: ${reservationDateTime}. numberOfGuests: ${numberOfGuests}`); //debug
-      } else {
-        const reservationResult = await reservationService
-          .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);
-        text = reservationResult.success || reservationResult.error;
-      }
+      // const entities = await witService.query(eventText);
+      const { 
+        intent,
+        customerName,
+        reservationDateTime,
+        numberOfGuests
+      } = entities;
+
+      const reservationResult = await reservationService
+        .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);
+      text = reservationResult.success || reservationResult.error;
     }
+
     return slackWebClient.chat.postMessage({
       text,
       channel: session.context.slack.channel,

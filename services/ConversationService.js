@@ -9,13 +9,21 @@ class ConversationService {
                 exit: false,
             };
         }
+
+        if (!text) {
+            context.conversation.followUp = "Hey back!"
+            return context;
+        }
+
         const entities = await witService.query(text);
         // use '...' to merge objects, below merges the entities we have already on the conversation plus the entities we just got
-        context.conversation.entities = { ...context.conversation.entities, ...entities }; //! if a property exists in both objects, then then second entity's object will override it
+        context.conversation.entities = { ...context.conversation.entities, ...entities }; //! if a property exists in both objects, then the second entities object will override it
         if (context.conversation.entities.intent === 'reservation') {
+            console.log("! can we get here!")
             return ConversationService.intentReservation(context);
         }
         context.conversation.followUp = 'Could you rephrase that?';
+        console.log('context.conversation.entities: ', context.conversation.entities);
         return context;
     }
 

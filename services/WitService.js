@@ -9,25 +9,25 @@ class WitService {
         const queryResult = await this.client.message(text);
         const { intents, entities } = queryResult;
         //? console.log("res: " + JSON.stringify(queryResult, null, 2));
-
         const extractedEntities = {};
-
-        const extractedProper = {};
 
         Object.keys(entities).forEach((key) => {
             if (entities[key][0].confidence > 0.7) {
-                extractedEntities[key] = entities[key][0].value;
+                console.log("did we get here?");
+                if (key.toString().includes('contact')) {
+                    extractedEntities["customerName"] = entities[key][0].value;
+                } else if (key.toString().includes('number')) {
+                    extractedEntities["numberOfGuests"] = entities[key][0].value;
+                } else {
+                    extractedEntities["reservationDateTime"] = entities[key][0].value;
+                }
             }
         });
         if (intents && intents[0].name === 'reservation') {
-            extractedProper.intent = 'reservation';
+            extractedEntities.intent = 'reservation';
         };
-        extractedProper.customerName = extractedEntities["wit$contact:customerName"];
-        extractedProper.reservationDateTime = extractedEntities["wit$datetime:reservationDateTime"];
-        extractedProper.numberOfGuests = extractedEntities["wit$number:numberOfGuests"];
-
-        //? console.log("extracted: " + JSON.stringify(extractedProper, undefined, 2));
-        return extractedProper;
+        console.log("extracted: " + JSON.stringify(extractedEntities, undefined, 2));
+        return extractedEntities;
     }
 }
 
