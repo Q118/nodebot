@@ -5,8 +5,16 @@ const moment = require('moment');
 
 const router = express.Router();
 
+const createSessionId = (channel, user, ts) => {
+  return `${channel}-${user}-${ts}`;
+}
+
 module.exports = (params) => {
-  const { config, witService, reservationService } = params;
+  const { config,
+    witService,
+    reservationService,
+    sessionService
+  } = params;
   const slackEvents = createEventAdapter(config.slack.signingSecret);
   const slackWebClient = new WebClient(config.slack.token);
 
