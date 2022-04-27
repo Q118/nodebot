@@ -7,7 +7,6 @@ const router = express.Router();
 
 module.exports = (params) => {
   const { config, witService, reservationService } = params;
-
   const slackEvents = createEventAdapter(config.slack.signingSecret);
   const slackWebClient = new WebClient(config.slack.token);
 
@@ -16,20 +15,20 @@ module.exports = (params) => {
   async function handleMention(event) {
     const mention = /<@[A-Z0-9]+>/;
     const eventText = event.text.replace(mention, '').trim();
-    
-    console.log("can i get here?")
-
+    // console.log("event text: " + eventText); //debug
     let text = '';
 
     if (!eventText) {
       text = 'Hey!';
     } else {
       const entities = await witService.query(eventText);
-      const { intent, customerName, reservationDateTime, numberOfGuests } = entities;
-
+      const { intent } = entities;
+      const customerName = entities["wit$contact:customerName"];
+      const reservationDateTime = entities["wit$datetime:reservationDateTime"];
+      const numberOfGuests = entities["wit$number:numberOfGuests"];
+      // console.log(`intent: ${intent}. customerName: ${customerName}. reservationDateTime: ${reservationDateTime}. numberOfGuests: ${numberOfGuests}`); //debug
       if (!intent || intent !== 'reservation' || !customerName || !reservationDateTime || !numberOfGuests) {
         text = 'Sorry - could you rephrase that?';
-        console.log(entities);
       } else {
         const reservationResult = await reservationService
           .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);

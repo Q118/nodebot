@@ -7,8 +7,8 @@ class WitService {
 
     async query(text) {
         const queryResult = await this.client.message(text);
-        console.log("res: " + JSON.stringify(queryResult, null, 2));
-        const { entities } = queryResult;
+        const { intents, entities } = queryResult;
+        //? console.log("res: " + JSON.stringify(queryResult, null, 2));
 
         const extractedEntities = {};
 
@@ -17,7 +17,10 @@ class WitService {
                 extractedEntities[key] = entities[key][0].value;
             }
         });
-        console.log("extracted: " + extractedEntities);
+        if (intents && intents[0].name === 'reservation') {
+            extractedEntities.intent = 'reservation';
+        }
+        //? console.log("extracted: " + JSON.stringify(extractedEntities, undefined, 2));
         return extractedEntities;
     }
 }

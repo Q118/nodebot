@@ -1,1 +1,27 @@
-[{"datetime":1651350780,"numberOfGuests":"4","customerName":"Joe"},{"datetime":1651177980,"numberOfGuests":"2","customerName":"Larry"},{"datetime":1649363580,"numberOfGuests":"3","customerName":"Shane"},{"datetime":1649363580,"numberOfGuests":"3","customerName":"Shane"}]
+[
+    {
+        "datetime": 1651350780,
+        "numberOfGuests": "4",
+        "customerName": "Joe"
+    },
+    {
+        "datetime": 1651177980,
+        "numberOfGuests": "2",
+        "customerName": "Larry"
+    },
+    {
+        "datetime": 1651089600,
+        "numberOfGuests": 3,
+        "customerName": "Daniel"
+    },
+    {
+        "datetime": 1649363580,
+        "numberOfGuests": "1",
+        "customerName": "Larry"
+    },
+    {
+        "datetime": 1649363580,
+        "numberOfGuests": "1",
+        "customerName": "Larry"
+    }
+]
