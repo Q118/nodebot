@@ -13,7 +13,7 @@ class WitService {
 
         Object.keys(entities).forEach((key) => {
             if (entities[key][0].confidence > 0.7) {
-                console.log("did we get here?");
+                console.log("confidence high enough.");
                 if (key.toString().includes('contact')) {
                     extractedEntities["customerName"] = entities[key][0].value;
                 } else if (key.toString().includes('number')) {
@@ -23,7 +23,7 @@ class WitService {
                 }
             }
         });
-        if (intents) {
+        if (intents && intents[0].confidence > 0.7) {
             if (intents[0].name === 'reservation') {
                 extractedEntities.intent = 'reservation';
             } else if (intents[0].name === 'bye') {

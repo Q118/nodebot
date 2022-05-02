@@ -39,7 +39,7 @@ module.exports = (params) => {
       text = conversation.followUp;
     } else {
       // const entities = await witService.query(eventText);
-      const { 
+      const {
         intent,
         customerName,
         reservationDateTime,
@@ -49,6 +49,10 @@ module.exports = (params) => {
       const reservationResult = await reservationService
         .tryReservation(moment(reservationDateTime).unix(), numberOfGuests, customerName);
       text = reservationResult.success || reservationResult.error;
+    }
+
+    if (conversation.exit || conversation.complete) { //everything was fulfilled-all args are present
+      session.context.conversation = {};
     }
 
     return slackWebClient.chat.postMessage({
