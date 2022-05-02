@@ -18,6 +18,13 @@ class ConversationService {
         const entities = await witService.query(text);
         // use '...' to merge objects, below merges the entities we have already on the conversation plus the entities we just got
         context.conversation.entities = { ...context.conversation.entities, ...entities }; //! if a property exists in both objects, then the second entities object will override it
+        
+        //if bye is the intent, all else can be ignored
+        if(context.conversation.entities.intent === 'bye') {
+            context.conversation.followUp = 'Ok, bye!';
+            context.conversation.exit = true;
+        }
+        
         if (context.conversation.entities.intent === 'reservation') {
             console.log("! can we get here!")
             return ConversationService.intentReservation(context);

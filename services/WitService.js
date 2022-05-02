@@ -18,14 +18,20 @@ class WitService {
                     extractedEntities["customerName"] = entities[key][0].value;
                 } else if (key.toString().includes('number')) {
                     extractedEntities["numberOfGuests"] = entities[key][0].value;
-                } else {
+                } else if (key.toString().includes('datetime')) {
                     extractedEntities["reservationDateTime"] = entities[key][0].value;
                 }
             }
         });
-        if (intents && intents[0].name === 'reservation') {
-            extractedEntities.intent = 'reservation';
-        };
+        if (intents) {
+            if (intents[0].name === 'reservation') {
+                extractedEntities.intent = 'reservation';
+            } else if (intents[0].name === 'bye') {
+                extractedEntities.intent = 'bye';
+            } else if (intents[0].name === 'greetings') {
+                extractedEntities.intent = 'greetings';
+            }
+        }
         console.log("extracted: " + JSON.stringify(extractedEntities, undefined, 2));
         return extractedEntities;
     }
